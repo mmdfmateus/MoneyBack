@@ -19,20 +19,12 @@ firebase.initializeApp(config);
 router.post("/", function(req, res, next) {
   firebase
     .database()
-    .ref("travel/" + encodeURIComponent(req.body.identity))
+    .ref("travel/" + encodeURIComponent(req.body.identity.split('@')[0]))
     .set(req.body); 
 
   res.json(req.body);
 });
 
-/* GET home page. */
-router.get('/', function (req, res) {
-  firebase
-    .database()
-    .ref("travel/")
 
-
-  res.send('Hello World!');
-});
 
 module.exports = router;
