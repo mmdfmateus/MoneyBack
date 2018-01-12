@@ -26,90 +26,104 @@ function parseIdentity(identity) {
 }
 
 router.post("/diversos", function(req, res, next) {
+  var wb = new xl.Workbook();
 
-    var diversos = snapshot.val();
-      var wb = new xl.Workbook();
+  var headerStyle = wb.createStyle({
+    font: {
+      color: "#212121",
+      bold: true,
+      size: 14
+    }
+  });
 
-      var headerStyle = wb.createStyle({
-        font: {
-          color: "#212121",
-          bold: true,
-          size: 14
-        }
-      });
+  var style = wb.createStyle({
+    font: {
+      color: "#212121",
+      size: 12
+    }
+  });
 
-      var style = wb.createStyle({
+  var ws = wb.addWorksheet("Diversos");
+
+  ws
+    .cell(1, 1)
+    .string("Natureza")
+    .style(headerStyle);
+
+  ws
+    .cell(2, 1)
+    .string(req.body.natureza)
+    .style(style);
+  ws
+    .cell(1, 2)
+    .string("Valor")
+    .style(headerStyle);
+
+  ws
+    .cell(2, 2)
+    .number(parseFloat(req.body.valor))
+    .style(
+      wb.createStyle({
         font: {
           color: "#212121",
           size: 12
+        },
+        numberFormat: "R$#,##0.00; (R$#,##0.00); -"
+      })
+    );
+
+  ws
+    .cell(1, 3)
+    .string("Nota fiscal")
+    .style(headerStyle);
+
+  ws
+    .cell(2, 3)
+    .string(req.body.notaFiscal)
+    .style(style);
+
+  ws
+    .cell(1, 4)
+    .string("Solicitante")
+    .style(headerStyle);
+
+  ws
+    .cell(2, 4)
+    .string(req.body.nome)
+    .style(style);
+
+  wb.writeToBuffer().then(function(buffer) {
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "moneybackbot@gmail.com",
+        pass: "moneybackpass"
+      }
+    });
+
+    var mailOptions = {
+      from: "moneybackbot@gmail.com",
+      to: "brenof@take.net",
+      subject: "Solicitação de reembolso - " + req.body.nome,
+      text: "Segue despesa em anexo",
+      attachments: [
+        {
+          filename: "solicitacao-reembolso.xlsx",
+          content: buffer
         }
-      });
+      ]
+    };
 
-      var ws = wb.addWorksheet("Diversos");
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  });
 
-      ws
-        .cell(1, 1)
-        .string("Natureza")
-        .style(headerStyle);
-
-      ws
-        .cell(2, 1)
-        .string(req.body.natureza)
-        .style(style);
-      ws
-        .cell(1, 2)
-        .string("Valor")
-        .style(headerStyle);
-
-      ws
-        .cell(2, 2)
-        .string(req.body.valor)
-        .style(style);
-
-      ws
-        .cell(1, 3)
-        .string("Nota fiscal")
-        .style(headerStyle);
-        
-      ws
-        .cell(2, 3)
-        .string(req.body.notaFiscal)
-        .style(style);
-
-
-        wb.writeToBuffer().then(function(buffer) {
-          var transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-              user: "moneybackbot@gmail.com",
-              pass: "moneybackpass"
-            }
-          });
-  
-          var mailOptions = {
-            from: "moneybackbot@gmail.com",
-            to: "brenof@take.net",
-            subject: "Solicitação de reembolso - " + req.body.nome,
-            text: "Segue despesa em anexo",
-            attachments: [
-              {
-                filename: "solicitacao-reembolso.xlsx",
-                content: buffer
-              }
-            ]
-          };
-  
-          transporter.sendMail(mailOptions, function(error, info) {
-            if (error) {
-              console.log(error);
-            } else {
-              console.log("Email sent: " + info.response);
-            }
-          });
-        });
-
-
-  res.toJSON(req.body);
+  res.json(req.body);
 });
 
 router.post("/", function(req, res, next) {
