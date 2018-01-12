@@ -23,6 +23,17 @@ function parseIdentity(identity) {
     .replace(/-/g, "");
 }
 
+router.get("/closeTravel", function(req, res, next) {
+  var identity = parseIdentity(req.body.identity);
+
+  var respostaJSON = firebase
+    .database()
+    .ref("travel/" + identity)
+    .toJSON();
+
+  res.toJSON(req.body);
+});
+
 router.post("/", function(req, res, next) {
   var identity = parseIdentity(req.body.identity);
 
