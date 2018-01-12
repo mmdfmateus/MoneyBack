@@ -206,6 +206,9 @@ router.post("/close", function(req, res, next) {
             console.log(error);
           } else {
             console.log("Email sent: " + info.response);
+
+            var ref = firebase.database().ref("travel");
+            ref.child(identity).remove();
           }
         });
       });
