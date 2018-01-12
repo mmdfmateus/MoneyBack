@@ -15,14 +15,24 @@ var config = {
 
 firebase.initializeApp(config);
 
-/* GET home page. */
+/* POST home page. */
 router.post("/", function(req, res, next) {
   firebase
     .database()
-    .ref("travel/" + req.body.identity)
-    .set(req.body);
+    .ref("travel/" + encodeURIComponent(req.body.identity))
+    .set(req.body); 
 
   res.json(req.body);
+});
+
+/* GET home page. */
+router.get('/', function (req, res) {
+  firebase
+    .database()
+    .ref("travel/")
+
+
+  res.send('Hello World!');
 });
 
 module.exports = router;
