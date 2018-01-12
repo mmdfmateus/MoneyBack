@@ -15,9 +15,18 @@ var config = {
 
 firebase.initializeApp(config);
 
+function parseIdentity(identity) {
+  return identity
+    .split("@")[0]
+    .replace(/_/g, "")
+    .replace(/\./g, "")
+    .replace(/-/g, "");
+}
+
 /* POST home page. */
 router.post("/", function(req, res, next) {
   var identity = parseIdentity(req.body.identity);
+  console.log("id:" + identity);
 
   firebase
     .database()
@@ -27,11 +36,4 @@ router.post("/", function(req, res, next) {
   res.json(req.body);
 });
 
-function parseIdentity(identity) {
-  return identity
-    .split("@")[0]
-    .replace(/_/g, "")
-    .replace(/./g, "")
-    .replace(/-/g, "");
-}
 module.exports = router;
