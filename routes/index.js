@@ -1,4 +1,4 @@
-var express = require('express');
+var express = require("express");
 var firebase = require("firebase");
 
 var router = express.Router();
@@ -16,16 +16,13 @@ var config = {
 firebase.initializeApp(config);
 
 /* GET home page. */
-router.post('/:user', function(req, res, next) {
+router.post("/:user", function(req, res, next) {
   firebase
     .database()
     .ref("travel/" + req.params.user)
-    .set({
-    });
+    .set(req.body);
 
-  res.render('index', { title: 'Express' });
+  res.json(req.body);
 });
-
-
 
 module.exports = router;
