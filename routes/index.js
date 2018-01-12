@@ -104,7 +104,7 @@ router.post("/close", function(req, res, next) {
 
       ws
         .cell(2, 2)
-        .string(viagem.dataFim)
+        .string(req.body.dataFim)
         .style(style);
 
       ws
