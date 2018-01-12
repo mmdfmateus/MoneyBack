@@ -23,15 +23,25 @@ function parseIdentity(identity) {
     .replace(/-/g, "");
 }
 
-/* POST home page. */
 router.post("/", function(req, res, next) {
   var identity = parseIdentity(req.body.identity);
-  console.log("id:" + identity);
 
   firebase
     .database()
     .ref("travel/" + identity)
     .set(req.body);
+
+  res.json(req.body);
+});
+
+router.post("/items", function(req, res, next) {
+  var identity = parseIdentity(req.body.identity);
+
+  firebase
+    .database()
+    .ref("travel/" + identity)
+    .child("items")
+    .push(req.body);
 
   res.json(req.body);
 });
