@@ -17,14 +17,21 @@ firebase.initializeApp(config);
 
 /* POST home page. */
 router.post("/", function(req, res, next) {
+  var identity = parseIdentity(req.body.identity);
+
   firebase
     .database()
-    .ref("travel/" + encodeURIComponent(req.body.identity.split('@')[0]))
-    .set(req.body); 
+    .ref("travel/" + identity)
+    .set(req.body);
 
   res.json(req.body);
 });
 
-
-
+function parseIdentity(identity) {
+  return identity
+    .split("@")[0]
+    .replace(/_/g, "")
+    .replace(/./g, "")
+    .replace(/-/g, "");
+}
 module.exports = router;
